@@ -14,14 +14,14 @@ app.use(express.json());
 // Serve frontend files
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-app.use(express.static(path.join(__dirname, "../public")));
+app.use(express.static(path.join(__dirname, "../frontend")));
 
 // API route
 app.use("/api/chat", chatRoute);
 
 // Default route (optional, redirects to index.html)
 app.get("/", (req, res) => {
-  res.sendFile(path.join(__dirname, "../public/index.html"));
+  res.sendFile(path.join(__dirname, "../frontend/index.html"));
 });
 
 // Start server
