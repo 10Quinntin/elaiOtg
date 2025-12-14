@@ -9,12 +9,20 @@ This usually means the `GEMINI_API_KEY` environment variable is either:
 
 ## Step-by-Step Fix
 
-### 1. Verify Your API Key
+### 1. Get Your Production API Key
 
-First, make sure you have a valid Google Gemini API key:
-- Go to [Google AI Studio](https://makersuite.google.com/app/apikey)
-- Create or copy your API key
-- **Important**: Use the SAME API key that works in development, OR create a new production key
+**Best Practice**: Use separate API keys for development and production!
+
+1. **Go to [Google AI Studio](https://makersuite.google.com/app/apikey)**
+2. **Create a NEW API key for production** (recommended)
+   - This allows you to:
+     - Track usage separately
+     - Revoke/rotate keys independently
+     - Set different quotas/limits
+     - Keep production secure if dev key is compromised
+3. **OR use your existing production key** if you already have one
+
+**Note**: Your local development will continue using the key in your `.env` file. Vercel will use the key you set in environment variables - they are completely separate!
 
 ### 2. Set Environment Variable in Vercel
 
@@ -28,11 +36,13 @@ First, make sure you have a valid Google Gemini API key:
 
 3. **Add/Update the Variable**
    - **Key**: `GEMINI_API_KEY` (must be EXACTLY this, case-sensitive)
-   - **Value**: Paste your Google Gemini API key
+   - **Value**: Paste your **PRODUCTION** Google Gemini API key (different from your dev key)
    - **Environments**: Select ALL three:
      - ✅ Production
      - ✅ Preview  
      - ✅ Development
+   
+   **Important**: This is your PRODUCTION key. Your local `.env` file will continue using your development key.
 
 4. **Save**
    - Click **"Save"** button
@@ -124,13 +134,26 @@ After redeployment, check if it's working:
 
 ## Quick Checklist
 
-- [ ] API key is valid and active
+- [ ] **Production API key** is valid and active (can be different from dev key)
 - [ ] Variable name is exactly `GEMINI_API_KEY` (case-sensitive)
 - [ ] Variable value is correct (no extra spaces/quotes)
 - [ ] All environments are selected (Production, Preview, Development)
 - [ ] Project has been redeployed AFTER setting the variable
 - [ ] Function logs show the API key is being found
 - [ ] Google Cloud API is enabled and has quota available
+- [ ] Local `.env` file still has your development key (for local testing)
+
+## Separate Development and Production Keys
+
+**Current Setup:**
+- **Local Development**: Uses `.env` file → `GEMINI_API_KEY=your_dev_key`
+- **Vercel Production**: Uses environment variables → `GEMINI_API_KEY=your_production_key`
+
+This is the **recommended approach** because:
+- ✅ Security: If dev key is exposed, production stays safe
+- ✅ Tracking: Separate usage metrics for dev vs production
+- ✅ Control: Can revoke/rotate keys independently
+- ✅ Quotas: Can set different limits for each environment
 
 ## Still Need Help?
 

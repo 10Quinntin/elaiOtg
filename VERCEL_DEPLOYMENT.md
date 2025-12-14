@@ -53,7 +53,10 @@ git push origin main
    - Before clicking "Deploy", expand the **"Environment Variables"** section
    - Click **"Add"** to add a new variable:
      - **Key**: `GEMINI_API_KEY`
-     - **Value**: Your Google Gemini API key
+     - **Value**: Your **PRODUCTION** Google Gemini API key
+       - 💡 **Best Practice**: Use a different API key for production than your development key
+       - Your local `.env` file will continue using your dev key
+       - Vercel will use this production key
      - **Environments**: Select all (Production, Preview, Development)
    - Click **"Add"** to save
 
@@ -108,7 +111,10 @@ CHATBOT-ELAI/
 
 ## Important Notes
 
-1. **Environment Variables**: Make sure to set `GEMINI_API_KEY` in Vercel dashboard before testing the chat functionality.
+1. **Environment Variables**: 
+   - Set `GEMINI_API_KEY` in Vercel dashboard with your **PRODUCTION** API key
+   - Your local `.env` file uses your **DEVELOPMENT** API key
+   - These are completely separate - you can use different keys for each environment (recommended!)
 
 2. **API Routes**: The API is accessible at `/api/chat` endpoint. The frontend automatically detects the correct API URL based on the current domain.
 
@@ -118,6 +124,8 @@ CHATBOT-ELAI/
    npm start
    ```
    The frontend will work with localhost:3000 when running locally.
+   - Uses API key from `.env` file (development key)
+   - Vercel deployment uses environment variable (production key)
 
 4. **Static Files**: All frontend files are served from the `/frontend` directory.
 
