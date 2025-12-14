@@ -11,8 +11,15 @@ router.post("/", async (req, res) => {
     const apiKey = process.env.GEMINI_API_KEY;
     if (!apiKey) {
       console.error("GEMINI_API_KEY is not set in environment");
-      return res.status(500).json({ reply: "Server misconfigured: missing GEMINI_API_KEY. Add it to .env and restart the server." });
+      console.error("Available env vars:", Object.keys(process.env).filter(k => k.includes('GEMINI') || k.includes('API')));
+      return res.status(500).json({ 
+        reply: "Server misconfigured: missing GEMINI_API_KEY. Please check your Vercel environment variables settings.",
+        error: "GEMINI_API_KEY not found"
+      });
     }
+    
+    // Log that API key is found (but don't log the actual key)
+    console.log("GEMINI_API_KEY found:", apiKey ? `${apiKey.substring(0, 10)}...` : "NOT FOUND");
 
     // Initialize Gemini client
     const ai = new GoogleGenAI({ apiKey });
@@ -90,10 +97,19 @@ You are here to correct stupidity and get the user the right motorcycle fast.
 
   } catch (error) {
     console.error("Gemini API error:", error?.message || error);
-    const userMessage = (error && error.message && error.message.includes("API_KEY_INVALID"))
-      ? "AI API error: API key invalid. Check your GEMINI_API_KEY and that the Generative Language API is enabled in Google Cloud."
-      : "AI failed to respond";
-    res.status(500).json({ reply: userMessage });
+    console.error("Full error:", error);
+    
+    let errorMessage = "AI failed to respond";
+    
+    if (error?.message?.includes("API_KEY_INVALID") || error?.message?.includes("API key")) {
+      errorMessage = "AI API error: Invalid API key. Please verify your GEMINI_API_KEY in Vercel environment variables is correct and active.";
+    } else if (error?.message?.includes("quota") || error?.message?.includes("limit")) {
+      errorMessage = "AI API error: API quota exceeded or rate limit reached. Please check your Google Cloud API usage.";
+    } else if (error?.message) {
+      errorMessage = `AI API error: ${error.message}`;
+    }
+    
+    res.status(500).json({ reply: errorMessage, error: error?.message || "Unknown error" });
   }
 });
 
